@@ -10,20 +10,21 @@ export class PostagemService{
     constructor(
 
         @InjectRepository(Postagem) 
-        private postagemRepository: Repository<Postagem>,
-        private temaService: TemaService
+        private postagemRepository: Repository<Postagem>, // Criamos um Objeto da classe Repository voltado para Postagens
+        private temaService: TemaService //injetamos o temaService para poder usar os metodos dele
         
     ){}
     async findAll(): Promise<Postagem[]> {
 
         return await this.postagemRepository.find({
-            relations:{
+            relations:{ // é o left join, onde ele trás as informaçoes do tema também
                 tema: true
             }
         })
     }
 
     async findById(id: number): Promise<Postagem>{
+        //verifica primeiro se a postagem existe
         const postagem = await this.postagemRepository.findOne({
             where: { 
                 id 
@@ -52,7 +53,15 @@ export class PostagemService{
     }
 
     async create(postagem: Postagem): Promise<Postagem>{
-        await this.temaService.findById(postagem.tema.id) // antes de persistir os dados é preciso verificar se o tema existe
+
+        if(postagem.tema){
+            let tema = await this.temaService.findById(postagem.tema.id)
+
+            if(!tema){
+                throw new HttpException('Tema não encontrado', HttpStatus.NOT_FOUND)
+            }
+        }
+         // antes de persistir os dados é preciso verificar se o tema existe
 
         return this.postagemRepository.save(postagem)
     }
@@ -60,10 +69,16 @@ export class PostagemService{
     async update(postagem: Postagem): Promise<Postagem>{
         let busca = await this.findById(postagem.id) //primeiro procura a postagem
 
-        await this.temaService.findById(postagem.tema.id)
-
         if(!busca || !postagem){
             throw new HttpException('Postagem não encontrada', HttpStatus.NOT_FOUND) // se a postagem nao existir, é gerado uma exceção
+        }
+         if (postagem.tema) {
+            let tema = await this.temaService.findById(postagem.tema.id)
+
+            if (!tema) {
+                throw new HttpException('Tema não encontrado!', HttpStatus.NOT_FOUND);
+            }
+
         }
 
         return await this.postagemRepository.save(postagem) //se existir a postagem é salva

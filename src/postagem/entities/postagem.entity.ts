@@ -20,8 +20,9 @@ export class Postagem{
     @UpdateDateColumn()
     data: Date
 
+   // Define um relacionamento MUITOS para UM (ManyToOne)
     @ManyToOne(() => Tema, (tema) => tema.postagem, {
-        onDelete: "CASCADE",
+        onDelete: "CASCADE", // Garante que ao deletar um Tema, todas as Postagens associadas a ele sejam removidas automaticamente
     })
-    tema: Tema
+    tema: Tema // Cria o atributo "tema" na entidade atual onde sera criada uma chave estrangeira (FK) no banco de dados
 }
