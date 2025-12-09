@@ -3,24 +3,23 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { DeleteResult, ILike, Repository } from "typeorm";
 import { Tema } from "../entities/tema.entity";
 
-
 @Injectable()
-export class TemaService{
-
+export class TemaService {
     constructor(
         @InjectRepository(Tema)
         private temaRepository: Repository<Tema>
-    ){}
+    ) { }
 
-    async findAll(): Promise<Tema[]>{
+    async findAll(): Promise<Tema[]> {
         return await this.temaRepository.find({
             relations: {
                 postagem: true
             }
-        })
+        });
     }
 
-    async findById(id: number): Promise<Tema>{
+    async findById(id: number): Promise<Tema> {
+
         let tema = await this.temaRepository.findOne({
             where: {
                 id
@@ -30,24 +29,24 @@ export class TemaService{
             }
         });
 
-        if(!tema){
-            throw new HttpException('Tema não encontrado', HttpStatus.NOT_FOUND)
-        }
-        return tema
+        if (!tema)
+            throw new HttpException('Tema não encontrado!', HttpStatus.NOT_FOUND);
+
+        return tema;
     }
 
-    async findByDescricao(descricao: string): Promise<Tema[]>{
+    async findAllByDescricao(descricao: string): Promise<Tema[]> {
         return await this.temaRepository.find({
             where: {
                 descricao: ILike(`%${descricao}%`)
             },
-            relations:{
+            relations: {
                 postagem: true
             }
         })
     }
 
-      async create(Tema: Tema): Promise<Tema> {
+    async create(Tema: Tema): Promise<Tema> {
         return await this.temaRepository.save(Tema);
     }
 
@@ -55,10 +54,8 @@ export class TemaService{
 
         let buscaTema = await this.findById(tema.id);
 
-        // Se a postagem não existir, lace uma Exceção que vai direto para o Cliente com o status 404 Not Found
         if (!buscaTema || !tema.id)
             throw new HttpException('Tema não encontrado!', HttpStatus.NOT_FOUND);
-
 
         return await this.temaRepository.save(tema);
     }
@@ -73,4 +70,5 @@ export class TemaService{
         return await this.temaRepository.delete(id);
 
     }
+
 }
