@@ -7,6 +7,7 @@ import { Tema } from './temas/entities/tema.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { Usuario } from './usuario/entities/usuario.entity';
+import { AppController } from './app.controller';
 
 
 // arquivos module, serve para configuração
@@ -30,7 +31,7 @@ imports: [  // Configurando o TypeORM
     AuthModule,
     UsuarioModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

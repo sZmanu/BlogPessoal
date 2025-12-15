@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Res } from '@nestjs/common';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
-// controller recebe as requisições e apartir dai ele irá definir a rota que precisa ser feita, que no caso irá indicar qual metodo na service precisa ser executado 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() { }
 
+  @ApiExcludeEndpoint() // Indica para ignorar esse endpoint
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  async redirect(@Res() resposta: any) {
+    return resposta.redirect('/swagger');
   }
 }
